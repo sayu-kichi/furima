@@ -12,10 +12,15 @@ class ItemsController extends Controller
     {
 
         $items = Item::all();
-
-        // 2. 'index' という名前の View（index.blade.php）を表示します
-        // その際、'items' という名前で取得したデータを画面側に渡します
-        // これにより、Blade側で $items 変数が使えるようになります
         return view('index', ['items' => $items]);
+    }
+
+    public function show($id)
+    {
+        // IDに一致する商品を1件取得。なければ404エラー
+        $item = Item::findOrFail($id);
+        
+        // 商品詳細ビューを表示
+        return view('item_detail', compact('item'));
     }
 }
