@@ -43,8 +43,8 @@ class AuthController extends Controller
         Auth::login($user);
 
         // メール認証が必要な画面（verification.notice）へリダイレクト
-//        return redirect()->route('verification.notice');
+        return redirect()->route('verification.notice');
+}
         
         
     }
-}

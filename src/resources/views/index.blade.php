@@ -1,46 +1,18 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>商品一覧画面 - COACHTECH</title>
-    <!-- 外部CSS (public/css/style.css) を読み込みます -->
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-</head>
-<body>
+@extends('layouts.app')
 
-    <!-- ヘッダーセクション -->
-    <header class="header-bg">
-        <div class="header-container">
-            
-            <div class="logo">
-                <img src="{{ asset('img/titlle.png') }}" alt="COACHTECH" class="logo-img">
-            </div>
-            
-            <!-- 検索バー -->
-            <div class="search-container">
-                <input type="text" placeholder="なにお探しですか？" class="search-input">
-            </div>
+@section('title', '商品一覧 - COACHTECH')
 
-            <!-- 右側ナビゲーション -->
-            <nav class="nav-menu">
-                <a href="#" class="nav-link">ログイン</a>
-                <a href="#" class="nav-link">マイページ</a>
-                <a href="#" class="sell-button">出品</a>
-            </nav>
-        </div>
-    </header>
-
+@section('content')
     <!-- タブメニューナビゲーション -->
     <nav class="tab-nav">
         <div class="tab-container">
-            <a href="#" class="tab-item active">おすすめ</a>
-            <a href="#" class="tab-item">マイリスト</a>
+            <a href="/" class="tab-item {{ !request('tab') || request('tab') == 'recommend' ? 'active' : '' }}">おすすめ</a>
+            <a href="/?tab=mylist" class="tab-item {{ request('tab') == 'mylist' ? 'active' : '' }}">マイリスト</a>
         </div>
     </nav>
 
     <!-- メインコンテンツエリア -->
-    <main class="main-content">
+    <div class="main-content">
         <div class="product-grid">
             
             {{-- 
@@ -49,23 +21,25 @@
             @foreach ($items as $item)
                 <div class="product-card">
                     <!-- 商品画像 -->
-                    <a href="{{ route('item.show', ['id' => $item->id]) }}" class="product-card" style="text-decoration: none; color: inherit; display: block;">
+                    <a href="{{ route('item.show', ['id' => $item->id]) }}" class="product-card-link" style="text-decoration: none; color: inherit; display: block;">
                         <div class="product-image-box">
                             @if($item->image_url)
                                 <img src="{{ asset('img/' . $item->image_url) }}" alt="{{ $item->name }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;">
                             @else
-                                <p>No Image</p>
+                                <div class="no-image-placeholder">
+                                    <p>No Image</p>
+                                </div>
                             @endif
                         </div>
                         <!-- 商品名と価格 -->
-                        <p class="product-name-label">{{ $item->name }}</p>
-                        <p style="font-weight: bold;">¥{{ number_format($item->price) }}</p>
+                        <div class="product-info">
+                            <p class="product-name-label">{{ $item->name }}</p>
+                            <p style="font-weight: bold; margin-top: 4px;">¥{{ number_format($item->price) }}</p>
+                        </div>
                     </a>
                 </div>
             @endforeach
 
         </div>
-    </main>
-
-</body>
-</html>
+    </div>
+@endsection

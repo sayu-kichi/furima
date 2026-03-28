@@ -1,29 +1,12 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $item->name }} | COAHTECH</title>
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/item_detail.css') }}">
-    <!-- アイコン用のライブラリ（FontAwesomeなど）があればここで読み込み -->
-</head>
-<body>
-    <header class="header-bg">
-        <div class="header-container">
-            <div class="logo">
-                <a href="/"><img src="{{ asset('img/titlle.png') }}" alt="COACHTECH" class="logo-img"></a>
-            </div>
-            <div class="search-container">
-                <input type="text" class="search-input" placeholder="なにをお探しですか？">
-            </div>
-            <nav class="nav-menu">
-                <a href="#" class="nav-link">ログイン</a>
-                <a href="#" class="nav-link">マイページ</a>
-                <a href="#" class="sell-button">出品</a>
-            </nav>
-        </div>
-    </header>
+@extends('layouts.app')
+
+@section('title', '商品一覧 - COACHTECH')
+
+@section('css')
+<link rel="stylesheet" href="{{ asset('css/item_detail.css') }}">
+@endsection
+
+@section('content')
 
     <main class="main-content">
         <div class="detail-container">
@@ -107,6 +90,5 @@
                 @endauth
             </section>
         </div>
-    </main>
-</body>
-</html>
+</main>
+@endsection

@@ -26,20 +26,19 @@
 .auth-main {
     display: flex;
     justify-content: center;
-    padding: 50px 20px;
+    padding: 30px 20px;
 }
 
 .auth-content {
     width: 100%;
-    max-width: 680px;
-    /* デザイン指示の横幅 */
+    max-width: 580px;
 }
 
 .auth-title {
     font-size: 28px;
     font-weight: bold;
     text-align: center;
-    margin-bottom: 50px;
+    margin-bottom: 20px;
     color: #000;
 }
 
@@ -50,7 +49,7 @@
 }
 
 .form-group {
-    margin-bottom: 25px;
+    margin-bottom: 15px;
 }
 
 .form-group label {
@@ -64,7 +63,7 @@
 /* 指示通りの「下線のみ」の入力欄 */
 .form-group input {
     width: 100%;
-    padding: 10px 12px; /* 枠の内側に余白を持たせる */
+    padding: 8px 12px; /* 枠の内側に余白を持たせる */
     border: 1px solid #ccc; /* 四角いボーダー */
     border-radius: 4px; /* わずかに角を丸くして柔らかい印象に */
     font-size: 16px;
@@ -84,7 +83,7 @@
     background-color: #ff4d4d;
     color: #fff;
     border: none;
-    padding: 16px;
+    padding: 12px;
     border-radius: 4px;
     font-size: 1.1rem;
     font-weight: bold;

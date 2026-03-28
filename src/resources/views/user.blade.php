@@ -1,22 +1,14 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>会員登録 | COACHTECH</title>
-    <!-- 外部CSSファイルを読み込み -->
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/user.css') }}">
-</head>
-<body class="auth-page">
-    <header class="auth-header">
-        <div class="header-container">
-            <a href="/">
-                <img src="{{ asset('img/titlle.png') }}" alt="COACHTECH">
-            </a>
-        </div>
-    </header>
+@extends('layouts.app')
 
+@section('title', '会員登録 - COACHTECH')
+@section('is-auth-page', true)
+
+@section('css')
+    <link rel="stylesheet" href="{{ asset('css/user.css') }}">
+@endsection
+
+@section('content')
+    {{-- 中央寄せを機能させるために auth-main で囲む --}}
     <main class="auth-main">
         <div class="auth-content">
             <h1 class="auth-title">会員登録</h1>
@@ -61,5 +53,4 @@
             </form>
         </div>
     </main>
-</body>
-</html>
+@endsection

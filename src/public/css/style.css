@@ -108,8 +108,7 @@ body {
 .main-content {
     max-width: 1512px;
     margin: 0 auto;
-    /* 1512pxのうち、左右に66pxずつの余白を作ることで、内側を1380pxにします */
-    padding: 40px 66px;
+    padding: 25px 100px;
     box-sizing: border-box;
 }
 
@@ -185,5 +184,3 @@ body {
         gap: 15px 10px;
     }
 }
-
-

@@ -207,6 +207,7 @@
     .detail-container {
         flex-direction: column;
         gap: 30px;
+        padding: 30px;
     }
 
     .detail-image-section {
