@@ -6,7 +6,7 @@
     <title>@yield('title', 'COACHTECH')</title>
     <!-- 全画面共通のスタイルシート -->
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-    <!-- 認証画面など個別のCSSが必要な場合 -->
+  
 
     
     <link rel="stylesheet" href="{{ asset('css/verify-email.css') }}">

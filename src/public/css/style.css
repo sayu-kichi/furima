@@ -65,6 +65,28 @@ body {
     text-decoration: none;
 }
 
+.nav-link-btn {
+    background: transparent;
+    /* 背景を透明に */
+    border: none;
+    /* 枠線を消す */
+    color: #fff;
+    /* 文字色を白に */
+    font-size: 0.9rem;
+    /* 他のリンクとサイズを合わせる */
+    font-weight: normal;
+    cursor: pointer;
+    /* カーソルを指の形に */
+    padding: 0;
+    /* 余計な余白を消す */
+    margin: 0;
+    font-family: inherit;
+    /* フォントを継承 */
+    text-decoration: none;
+    line-height: inherit;
+}
+
+
 .sell-button {
     background-color: #fff;
     color: #000;

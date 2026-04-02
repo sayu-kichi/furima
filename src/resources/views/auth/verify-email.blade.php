@@ -19,7 +19,7 @@
 
             <!-- 画像に基づいたグレー背景・黒枠のボタン -->
             <div style="margin-bottom: 50px;">
-                <a href="/" class="btn-gray">認証はこちらから</a>
+                <a href="http://localhost:8025" target="_blank" class="btn-gray" style="text-decoration: none;">認証はこちらから</a>
             </div>
 
             <!-- 再送用のリンク（ボタンではなく青いテキストリンク形式） -->
@@ -32,11 +32,8 @@
                 </form>
             </div>
 
-            <!-- 再送完了時のメッセージ表示 -->
-            @if (session('message'))
-                <div style="color: #28a745; margin-top: 20px; font-weight: bold;">
-                    {{ session('message') }}
-                </div>
+            @if (session('status') == 'verification-link-sent')
+            <p class="success-message">新しい認証リンクを送信しました！</p>
             @endif
         </div>
     </main>

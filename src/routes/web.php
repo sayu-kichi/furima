@@ -3,6 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ItemsController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
+use Illuminate\Http\Request;
+//use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,12 +27,8 @@ Route::get('/register', [AuthController::class, 'create'])->name('register');
 
 Route::post('/register', [AuthController::class, 'store']);
 
-Route::get('/login', function () {
-    return view('auth.login');
-})->name('login');
+    Route::get('/mypage/profile', [UserController::class, 'editProfile'])->name('profile.edit');
 
-// ログイン処理 (POST) - 必要に応じてコントローラーを作成してください
-Route::post('/login', [AuthController::class, 'login']);
 
 
 /* --- メール認証関連 --- */
@@ -51,14 +50,26 @@ Route::post('/email/verification-notification', function (Request $request) {
     return back()->with('message', '認証リンクを再送信しました。');
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
-// ログアウト処理 (verify-email.blade.php などで使用)
-Route::post('/logout', function (Request $request) {
-    auth()->logout();
-    $request->session()->invalidate();
-    $request->session()->regenerateToken();
-    return redirect('/');
-})->name('logout');
 
-Route::get('/email/verify', function () {
-    return view('auth.verify-email');
-})->name('verification.notice');
+
+// ログアウト処理 (verify-email.blade.php などで使用)
+//Route::post('/logout', function (Request $request) {
+//    auth()->logout();
+//    $request->session()->invalidate();
+//    $request->session()->regenerateToken();
+//    return redirect('/');
+//})->name('logout');
+
+// ログインが必要なルート
+Route::middleware(['auth', 'verified'])->group(function () {
+    // マイページ
+    Route::get('/mypage', [UserController::class, 'mypage'])->name('mypage');
+    });
+    
+    // コメント投稿
+    //Route::post('/items/{id}/comment', [ItemDetailController::class, 'storeComment'])->name('comment.store');
+    
+    // お気に入り切り替え（Ajax用）
+    //Route::post('/items/{id}/favorite', [ItemDetailController::class, 'toggleFavorite'])->name('favorite.toggle');
+
+    
