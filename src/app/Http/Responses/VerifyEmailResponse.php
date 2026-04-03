@@ -15,7 +15,10 @@ class VerifyEmailResponse implements VerifyEmailResponseContract
      */
     public function toResponse($request)
     {
-        // 4-d の要件に基づき、リダイレクト先を /mypage/profile に設定
-        return redirect()->route('profile.edit')->with('status', 'verified');
+        if ($request->wantsJson()) {
+            return new JsonResponse('', 204);
+        }
+
+        return redirect('/mypage/profile')->with('status', 'verified');
     }
 }

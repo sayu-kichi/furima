@@ -7,13 +7,15 @@ use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
 use App\Actions\Fortify\UpdateUserProfileInformation;
+use App\Http\Responses\VerifyEmailResponse;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use Laravel\Fortify\Contracts\VerifyEmailResponse as VerifyEmailResponseContract;
 use Laravel\Fortify\Fortify;
-
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -22,11 +24,14 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // singleton で登録することで、Fortify標準の挙動を自作クラスで上書きします
+        /**
+         * Custom Response Binding
+         * メール認証完了後のリダイレクト先をカスタマイズするために自作クラスを登録
+         */
         $this->app->singleton(
-        \Laravel\Fortify\Contracts\VerifyEmailResponse::class,
-        \App\Http\Responses\VerifyEmailResponse::class
-    );
+            VerifyEmailResponseContract::class,
+            VerifyEmailResponse::class
+        );
     }
 
     /**
@@ -42,7 +47,7 @@ class FortifyServiceProvider extends ServiceProvider
 
         // ログイン試行回数の制限（1分間に5回まで）
         RateLimiter::for('login', function (Request $request) {
-            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
+            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())) . '|' . $request->ip());
             return Limit::perMinute(5)->by($throttleKey);
         });
 
@@ -63,16 +68,16 @@ class FortifyServiceProvider extends ServiceProvider
             return view('auth.verify-email');
         });
 
-        // --- ログイン・登録後の挙動カスタマイズ ---
+        // --- 認証ロジックのカスタマイズ ---
 
-        // ログイン時に使用するカラムを user_id または email に指定
-        // 今回の要件に合わせて、リクエストから判断するように設定
+        // ログイン時に使用するカラムをリクエストから判断して認証
         Fortify::authenticateUsing(function (Request $request) {
-             $user = User::where('email', $request->email)->first();
+            $user = User::where('email', $request->email)->first();
 
-            if ($user && \Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
+            if ($user && Hash::check($request->password, $user->password)) {
                 return $user;
             }
+            return null;
         });
     }
 }

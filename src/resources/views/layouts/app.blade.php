@@ -46,7 +46,8 @@
                             @csrf
                             <button type="submit" class="nav-link-btn">ログアウト</button>
                         </form>
-                        <a href="/mypage" class="nav-link">マイページ</a>
+                        <a href="{{ route('profile.index') }}" class="nav-link">マイページ</a>
+<!--   直書きVER                     <a href="/mypage" class="nav-link">マイページ</a> -->
                     @else
                         <!-- 未ログイン時の表示 -->
                         <a href="{{ route('login') }}" class="nav-link">ログイン</a>

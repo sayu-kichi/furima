@@ -38,7 +38,7 @@ class AuthController extends Controller
         ]);
 
         // メール送信イベントを発行
-//        event(new Registered($user));
+        event(new Registered($user));
 
         Auth::login($user);
 

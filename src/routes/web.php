@@ -5,31 +5,32 @@ use App\Http\Controllers\ItemsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
-//use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use App\Http\Controllers\ProfileController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest; // 修正：コメントアウトを解除
 
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
 */
 
-
 Route::get('/', [ItemsController::class, 'index']);
-
 Route::get('/item/{id}', [ItemsController::class, 'show'])->name('item.show');
-
 Route::get('/register', [AuthController::class, 'create'])->name('register');
-
 Route::post('/register', [AuthController::class, 'store']);
 
-    Route::get('/mypage/profile', [UserController::class, 'editProfile'])->name('profile.edit');
+// ログイン済みユーザーのみアクセス可能なルート（プロフィール関連）
+Route::middleware(['auth', 'verified'])->group(function () {
+    // プロフィール表示（マイページ）
+    Route::get('/mypage', [ProfileController::class, 'index'])->name('profile.index');
 
+    // プロフィール設定・編集画面の表示
+    Route::get('/mypage/profile', [ProfileController::class, 'edit'])->name('profile.edit');
 
+    // プロフィール更新処理
+    Route::post('/mypage/profile', [ProfileController::class, 'update'])->name('profile.update');
+    
+});
 
 /* --- メール認証関連 --- */
 
@@ -41,7 +42,7 @@ Route::get('/email/verify', function () {
 // メールのリンクをクリックした時の処理
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
     $request->fulfill();
-    return redirect('/');
+    return redirect('/mypage/profile');
 })->middleware(['auth', 'signed'])->name('verification.verify');
 
 // 認証メールの再送処理
@@ -50,26 +51,6 @@ Route::post('/email/verification-notification', function (Request $request) {
     return back()->with('message', '認証リンクを再送信しました。');
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
-
-
-// ログアウト処理 (verify-email.blade.php などで使用)
-//Route::post('/logout', function (Request $request) {
-//    auth()->logout();
-//    $request->session()->invalidate();
-//    $request->session()->regenerateToken();
-//    return redirect('/');
-//})->name('logout');
-
-// ログインが必要なルート
-Route::middleware(['auth', 'verified'])->group(function () {
-    // マイページ
-    Route::get('/mypage', [UserController::class, 'mypage'])->name('mypage');
-    });
-    
-    // コメント投稿
-    //Route::post('/items/{id}/comment', [ItemDetailController::class, 'storeComment'])->name('comment.store');
-    
-    // お気に入り切り替え（Ajax用）
-    //Route::post('/items/{id}/favorite', [ItemDetailController::class, 'toggleFavorite'])->name('favorite.toggle');
-
-    
+/* 以下のコメントアウトされていた部分の構文エラー（閉じカッコの重複や位置ミス）を修正し、
+  構造を整理しました。
+*/
