@@ -51,7 +51,7 @@ class ProfileController extends Controller
             'building' => $request->building,
         ]);
 
-        return redirect()->route('profile.show')->with('message', 'プロフィールを更新しました');
+        return redirect()->route('index')->with('message', 'プロフィールを更新しました');
     }
 
     /**

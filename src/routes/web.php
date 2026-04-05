@@ -14,7 +14,7 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest; // 修正：コメン�
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', [ItemsController::class, 'index']);
+Route::get('/', [ItemsController::class, 'index'])->name('index');
 Route::get('/item/{id}', [ItemsController::class, 'show'])->name('item.show');
 Route::get('/register', [AuthController::class, 'create'])->name('register');
 Route::post('/register', [AuthController::class, 'store']);
@@ -28,7 +28,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/mypage/profile', [ProfileController::class, 'edit'])->name('profile.edit');
 
     // プロフィール更新処理
-    Route::post('/mypage/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/mypage/profile', [ProfileController::class, 'update'])->name('profile.update');
     
 });
 
