@@ -24,7 +24,7 @@
     gap: 24px;
     padding-bottom: 30px;
     margin-bottom: 30px;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid #374151;
 }
 
 .item-image-box {
@@ -52,7 +52,7 @@
 .selection-section {
     padding-bottom: 30px;
     margin-bottom: 30px;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid #374151;
 }
 
 .border-none {
@@ -85,6 +85,7 @@
     padding-left: 10px;
     color: #374151;
     line-height: 1.6;
+    border-bottom: 1px solid #374151;
 }
 
 /* セレクトボックスのカスタムスタイル */

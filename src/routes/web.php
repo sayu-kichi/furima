@@ -1,12 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;    
 use App\Http\Controllers\ItemsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\ProfileController;
-use Illuminate\Foundation\Auth\EmailVerificationRequest; // 修正：コメントアウトを解除
 
 /*
 |--------------------------------------------------------------------------
@@ -29,7 +30,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // プロフィール更新処理
     Route::put('/mypage/profile', [ProfileController::class, 'update'])->name('profile.update');
-    
 });
 
 /* --- メール認証関連 --- */
@@ -51,6 +51,14 @@ Route::post('/email/verification-notification', function (Request $request) {
     return back()->with('message', '認証リンクを再送信しました。');
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
-/* 以下のコメントアウトされていた部分の構文エラー（閉じカッコの重複や位置ミス）を修正し、
-  構造を整理しました。
-*/
+
+/* --- 購入関連 --- */
+Route::get('/purchase/{item_id}', [PurchaseController::class, 'show'])
+    ->middleware('auth')
+    ->name('user.purchase.show');
+
+Route::post('/purchase', [PurchaseController::class, 'store'])
+    ->middleware('auth')
+    ->name('user.purchase.store');
+
+Route::resource('address', UserController::class);
