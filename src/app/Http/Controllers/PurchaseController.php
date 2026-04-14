@@ -42,5 +42,47 @@ class PurchaseController extends Controller
         //     ...決済処理など...
 
         return redirect()->route('item.show', $item_id)->with('message', '購入が完了しました');
+
+        
     }
+
+    /**
+     * 送付先住所変更画面の表示
+     */
+    public function edit($item_id)
+    {
+        $item = Item::findOrFail($item_id);
+        $user = Auth::user();
+        
+        // Addressテーブルから現在の住所を取得
+        $address = $user->address; // UserモデルにhasOne設定がある前提
+
+        return view('purchase.address_edit', compact('item', 'address'));
+    }
+
+    /**
+     * 送付先住所の更新処理
+     */
+    public function update(Request $request, $item_id)
+    {
+        $user = Auth::user();
+
+        // バリデーション
+        $validated = $request->validate([
+            'post_code' => 'required',
+            'address'   => 'required',
+            'building'  => 'nullable',
+        ]);
+
+        // Addressテーブルを更新（または作成）
+        $user->address()->updateOrCreate(
+            ['user_id' => $user->id],
+            $validated
+        );
+
+        // 更新後は商品購入画面に戻る
+        return redirect()->route('purchase.show', ['item_id' => $item_id])
+                         ->with('message', '送付先を変更しました');
+    }
+    
 }

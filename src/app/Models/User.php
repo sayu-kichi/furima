@@ -8,26 +8,29 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
+     * 一括代入可能な属性
+     * DBのusersテーブルに存在するカラムのみを指定します。
+     * post_codeなどはaddressesテーブル側で管理するため、ここからは削除します。
      */
     protected $fillable = [
-        'name', 
+        'name',
         'email',
         'password',
     ];
 
+    public function profile()
+        {
+            return $this->hasOne(Profile::class);
+        }
+
+
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
+     * シリアル化時に非表示にする属性
      */
     protected $hidden = [
         'password',
@@ -35,9 +38,7 @@ class User extends Authenticatable implements MustVerifyEmail
     ];
 
     /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
+     * キャストする必要のある属性
      */
     protected $casts = [
         'email_verified_at' => 'datetime',

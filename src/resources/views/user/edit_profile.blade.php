@@ -10,6 +10,8 @@
 @section('content')
 <div class="profile-edit-container">
     <h1 class="profile-title">プロフィール設定</h1>
+    
+    <pre>{{ var_dump(auth()->user()->toArray()) }}</pre>
 
     <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
         @csrf
@@ -40,31 +42,28 @@
             @enderror
         </div>
 
-        {{-- 郵便番号 --}}
-        <div class="edit-form-group">
-            <label for="post_code">郵便番号</label>
-            <input type="text" id="post_code" name="post_code" value="{{ old('post_code', auth()->user()->post_code) }}">
-            @error('post_code')
-                <p class="error-message">{{ $message }}</p>
-            @enderror
+        <!-- 郵便番号 -->
+        <div class="form-group">
+            <label>郵便番号</label>
+            <input type="text" name="post_code" 
+                value="{{ old('post_code', $user->profile->post_code ?? '') }}" 
+                class="form-control">
         </div>
 
-        {{-- 住所 --}}
-        <div class="edit-form-group">
-            <label for="address">住所</label>
-            <input type="text" id="address" name="address" value="{{ old('address', auth()->user()->address) }}">
-            @error('address')
-                <p class="error-message">{{ $message }}</p>
-            @enderror
+        <!-- 住所 -->
+        <div class="form-group">
+            <label>住所</label>
+            <input type="text" name="address" 
+                value="{{ old('address', $user->profile->address ?? '') }}" 
+                class="form-control">
         </div>
 
-        {{-- 建物名 --}}
-        <div class="edit-form-group">
-            <label for="building">建物名</label>
-            <input type="text" id="building" name="building" value="{{ old('building', auth()->user()->building) }}">
-            @error('building')
-                <p class="error-message">{{ $message }}</p>
-            @enderror
+        <!-- 建物名 -->
+        <div class="form-group">
+            <label>建物名</label>
+            <input type="text" name="building" 
+                value="{{ old('building', $user->profile->building ?? '') }}" 
+                class="form-control">
         </div>
 
         <button type="submit" class="update-submit-btn">更新する</button>

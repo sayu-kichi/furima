@@ -5,7 +5,6 @@ use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;    
 use App\Http\Controllers\ItemsController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\UserController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\ProfileController;
 
@@ -61,4 +60,12 @@ Route::post('/purchase', [PurchaseController::class, 'store'])
     ->middleware('auth')
     ->name('user.purchase.store');
 
-Route::resource('address', UserController::class);
+Route::resource('address', PurchaseController::class);
+
+// 住所変更画面の表示
+Route::get('/purchase/address/{item_id}', [PurchaseController::class, 'edit'])
+    ->name('purchase.address.edit');
+
+// 住所変更の更新処理
+Route::put('/purchase/address/{item_id}', [PurchaseController::class, 'update'])
+    ->name('purchase.address.update');
