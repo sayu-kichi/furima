@@ -42,12 +42,24 @@
                 <div class="selection-section border-none">
                     <div class="section-header">
                         <h3 class="section-title">配送先</h3>
-                        <a href="{{ route('address.edit', ['address' => $item->id]) }}">変更する</a>
-
+                        <div class="flex-shrink-0">
+                            <a href="{{ route('user.address.edit', ['item_id' => $item->id]) }}" 
+                            class="text-red-500 hover:text-red-600 font-medium transition-colors text-sm">
+                                変更する
+                            </a>
+                        </div>
                     </div>
+
+                    <!-- 下段：住所情報 -->
                     <div class="address-display">
-                        <p>〒 {{ $user->post_code }}</p>
-                        <p>{{ $user->address }} {{ $user->building }}</p>
+                        @if($profile)
+                            <div class="text-sm text-gray-600 leading-relaxed">
+                                <p>〒{{ $profile->post_code ?? $profile->postal_code }}</p>
+                                <p>{{ $profile->address }}{{ $profile->building }}</p>
+                            </div>
+                        @else
+                            <p class="text-sm text-gray-400">住所が登録されていません。</p>
+                        @endif
                     </div>
                 </div>
             </form>
@@ -67,8 +79,8 @@
                 
                 <div class="action-box">
                     {{-- フォームの外にあるボタンから送信するために form属性を指定 --}}
-                    <!-- <form action="{{ route('user.purchase.store') }}" method="POST">
-                        @csrf -->
+                    <form action="{{ route('user.purchase.store', ['item_id' => $item->id]) }}" method="POST">
+                        @csrf
                     <button type="submit" form="purchase-form" class="btn-purchase">
                         購入する
                     </button>

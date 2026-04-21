@@ -35,7 +35,7 @@ return new class extends Migration
             $table->string('delivery_address', 256);
 
             // status: Integer
-            $table->integer('status');
+            $blueprint->integer('status')->default(1); 
 
             // Created_at & Updated_at
             $table->timestamps();

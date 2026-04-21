@@ -10,22 +10,25 @@
 <div class="address-edit-container">
     <h1 class="address-edit-title">住所の変更</h1>
 
-    <form action="{{ route('address.update') }}" method="POST">
+    
+    <form action="{{ route('user.address.update', ['address' => $address->id ?? 0, 'item_id' => $item_id]) }}" method="POST">
+
+        
         @csrf
-        @method('PATCH')
+        @method('PUT')
 
         {{-- 郵便番号 --}}
         <div class="form-group">
-            <label for="postal_code" class="form-label">郵便番号</label>
+            <label for="post_code" class="form-label">郵便番号</label>
             <input 
                 type="text" 
-                id="postal_code" 
-                name="postal_code" 
+                id="post_code" 
+                name="post_code" 
                 class="form-input" 
-                value="{{ old('postal_code', $user->postal_code) }}"
+                value="{{ old('post_code', $profile->post_code) }}"
                 placeholder="123-4567"
             >
-            @error('postal_code')
+            @error('post_code')
                 <p class="error-message">{{ $message }}</p>
             @enderror
         </div>
@@ -38,8 +41,8 @@
                 id="address" 
                 name="address" 
                 class="form-input" 
-                value="{{ old('address', $user->address) }}"
-                placeholder="東京都渋谷区..."
+                value="{{ old('address', $profile->address) }}"
+                placeholder="〇〇県〇〇市..."
             >
             @error('address')
                 <p class="error-message">{{ $message }}</p>
@@ -54,7 +57,7 @@
                 id="building" 
                 name="building" 
                 class="form-input" 
-                value="{{ old('building', $user->building) }}"
+                value="{{ old('building', $profile->building) }}"
                 placeholder="マンション名・部屋番号など"
             >
             @error('building')

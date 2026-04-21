@@ -5,84 +5,107 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Item;
+use App\Models\Order;
+use App\Models\Profile;
+use Stripe\Stripe;
+use Stripe\Checkout\Session;
+use App\Http\Requests\AddressRequest; 
 
 class PurchaseController extends Controller
 {
     /**
      * 商品購入画面の表示
-     *
-     * @param int $item_id
-     * @return \Illuminate\View\View
      */
     public function show($item_id)
     {
-        // 1. 実際のデータベースから商品を取得
-        // findOrFail を使うことで、商品が見つからない場合に自動的に404エラーを返します
         $item = Item::findOrFail($item_id);
-
-        // 2. 現在ログイン中のユーザー情報を取得
         $user = Auth::user();
+        $profile = $user->profile; 
 
-        // 3. ビューにデータを渡す
-        return view('user.purchase', compact('item', 'user'));
+        return view('user.purchase', compact('item', 'user', 'profile'));
     }
 
     /**
-     * 購入処理の実行（例）
-     *
-     * @param Request $request
-     * @param int $item_id
-     * @return \Illuminate\Http\RedirectResponse
+     * 決済処理（Stripe Checkout）
      */
     public function store(Request $request, $item_id)
     {
-        // ここに購入確定時のロジックを記述します
-        // 例: $item = Item::findOrFail($item_id);
-        //     $user = Auth::user();
-        //     ...決済処理など...
+        $item = Item::findOrFail($item_id);
+        $paymentMethod = $request->payment_method; // 'カード払い' or 'コンビニ払い'
 
-        return redirect()->route('item.show', $item_id)->with('message', '購入が完了しました');
+        Stripe::setApiKey(config('services.stripe.secret'));
 
-        
+        // 支払い方法の設定
+        $paymentTypes = ($paymentMethod === 'カード払い') ? ['card'] : ['konbini'];
+
+       $sessionOptions=[
+            'payment_method_types' => $paymentTypes,
+            'line_items' => [[
+                'price_data' => [
+                    'currency' => 'jpy',
+                    'product_data' => ['name' => $item->name],
+                    'unit_amount' => $item->price,
+                ],
+                'quantity' => 1,
+            ]],
+            'mode' => 'payment',
+            'success_url' => route('user.purchase.success', ['item_id' => $item->id]),
+            'cancel_url' => route('user.purchase.show', ['item_id' => $item->id]),
+        ];
+
+        return redirect($session->url, 303);
     }
+
+    
 
     /**
      * 送付先住所変更画面の表示
      */
-    public function edit($item_id)
+    public function success(Request $request, $item_id)
     {
-        $item = Item::findOrFail($item_id);
+        $item = Item::findOrFail($item_id); 
         $user = Auth::user();
-        
-        // Addressテーブルから現在の住所を取得
-        $address = $user->address; // UserモデルにhasOne設定がある前提
 
-        return view('purchase.address_edit', compact('item', 'address'));
+       //$address = $user->address;
+        //return view('user.address_edit', compact('item', 'user', 'address'));
+
+        // 1. ログインユーザーを取得
+        $user = auth()->user();
+
+        // 2. ユーザーに紐づくプロフィール（住所情報）を取得
+        // まだプロフィールがない場合は、空のインスタンスを作成する
+        $profile = \App\Models\Profile::where('user_id', $user->id)->first();
+
+        return view('user.address_edit', [
+            'item_id' => $item_id,
+            'profile' => $profile,
+        ]);
     }
 
     /**
      * 送付先住所の更新処理
      */
-    public function update(Request $request, $item_id)
+    public function updateAddress(Request $request, $item_id)
     {
-        $user = Auth::user();
+        $user = Auth::user(); 
 
         // バリデーション
         $validated = $request->validate([
-            'post_code' => 'required',
-            'address'   => 'required',
-            'building'  => 'nullable',
+            'post_code' => ['required', 'string', 'max:8'], 
+            'address'   => ['required', 'string', 'max:255'],
+            'building'  => ['nullable', 'string', 'max:255'],
         ]);
 
-        // Addressテーブルを更新（または作成）
-        $user->address()->updateOrCreate(
+        // リレーション経由で保存/更新
+         $user->profile()->updateOrCreate(
             ['user_id' => $user->id],
             $validated
         );
 
-        // 更新後は商品購入画面に戻る
-        return redirect()->route('purchase.show', ['item_id' => $item_id])
-                         ->with('message', '送付先を変更しました');
+        // ★ここが購入画面へのリターン処理です
+        return redirect()->route('user.purchase.show', ['item_id' => $item_id])
+                        ->with('message', '配送先を更新しました');
+
+
     }
-    
 }

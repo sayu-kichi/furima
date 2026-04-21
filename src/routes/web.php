@@ -52,20 +52,30 @@ Route::post('/email/verification-notification', function (Request $request) {
 
 
 /* --- 購入関連 --- */
-Route::get('/purchase/{item_id}', [PurchaseController::class, 'show'])
-    ->middleware('auth')
-    ->name('user.purchase.show');
+Route::middleware('auth')->group(function () {
+    
+    // 購入画面表示
+    Route::get('/purchase/{item_id}', [PurchaseController::class, 'show'])
+        ->name('user.purchase.show');
 
-Route::post('/purchase', [PurchaseController::class, 'store'])
-    ->middleware('auth')
-    ->name('user.purchase.store');
+    // 購入処理
+    Route::post('/purchase/{item_id}', [PurchaseController::class, 'store'])
+        ->name('user.purchase.store');
 
-Route::resource('address', PurchaseController::class);
+    Route::get('/purchase/success/{item_id}', [PurchaseController::class, 'success'])->name('user.purchase.success');
 
-// 住所変更画面の表示
-Route::get('/purchase/address/{item_id}', [PurchaseController::class, 'edit'])
-    ->name('purchase.address.edit');
 
-// 住所変更の更新処理
-Route::put('/purchase/address/{item_id}', [PurchaseController::class, 'update'])
-    ->name('purchase.address.update');
+    // 住所変更画面の表示
+    Route::get('/purchase/address/{item_id}', [PurchaseController::class, 'edit'])
+        ->name('user.address.edit');
+
+    // 住所変更の更新処理（PUTに統一）
+    // 名前を「updateAddress」に合わせ、名前付きルートも1つに絞ります
+    Route::put('/purchase/address/{item_id}', [PurchaseController::class, 'updateAddress'])
+        ->name('user.address.update');
+    });
+    
+
+Route::get('/sell', [ItemsController::class, 'create'])->name('item.create');
+
+Route::post('/sell', [ItemsController::class, 'store'])->name('item.store');

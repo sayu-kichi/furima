@@ -55,6 +55,10 @@
     border-bottom: 1px solid #374151;
 }
 
+.selection-section.border-none {
+    border-bottom: 1px solid #374151;
+}
+
 .border-none {
     border-bottom: none;
 }
@@ -82,14 +86,18 @@
 }
 
 .address-display {
-    padding-left: 10px;
+    margin-left: 50px;
     color: #374151;
     line-height: 1.6;
-    border-bottom: 1px solid #374151;
+    font-weight: bold;
 }
 
 /* セレクトボックスのカスタムスタイル */
 .select-wrapper {
+    display: block;
+    margin-left: 50px;
+    /* キャプチャに合わせて調整（50px〜100px） */
+    margin-bottom: 20px;
     position: relative;
     max-width: 400px;
 }

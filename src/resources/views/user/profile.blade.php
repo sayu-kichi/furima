@@ -11,12 +11,17 @@
     {{-- ユーザー情報セクション --}}
     <div class="profile-header">
         <div class="profile-avatar">
-            @if(auth()->user()->image_url)
-                <img src="{{ asset('storage/' . auth()->user()->image_url) }}" alt="ユーザーアイコン">
+            @if($user->profile && $user->profile->image_url)
+                {{-- Controllerで 'profiles' フォルダに保存しているため、そのままパスを結合 --}}
+                <img src="{{ asset('storage/' . $user->profile->image_url) }}" alt="ユーザーアイコン">
+            @else
+                <div class="no-avatar">
+                    <span>No Image</span>
+                </div>
             @endif
         </div>
         <div class="profile-info">
-            <h1 class="profile-name">{{ auth()->user()->name }}</h1>
+            <h1 class="profile-name">{{ $user->name }}</h1>
             <a href="{{ route('profile.edit') }}" class="profile-edit-link">プロフィールを編集</a>
         </div>
     </div>
@@ -30,20 +35,19 @@
     {{-- 出品した商品一覧 --}}
     <div id="selling" class="tab-content active">
         <div class="items-grid">
-            {{-- ここは本来 @foreach でループさせます --}}
             @forelse($sellingItems as $item)
                 <a href="{{ route('item.show', $item->id) }}" class="item-card">
                     <div class="item-image">
                         @if($item->image_url)
                             <img src="{{ asset('storage/' . $item->image_url) }}" alt="{{ $item->name }}">
                         @else
-                            商品画像
+                            <div class="placeholder">商品画像なし</div>
                         @endif
                     </div>
                     <p class="item-name">{{ $item->name }}</p>
                 </a>
             @empty
-                <p>出品した商品はありません。</p>
+                <p class="empty-message">出品した商品はありません。</p>
             @endforelse
         </div>
     </div>
@@ -57,13 +61,13 @@
                         @if($item->image_url)
                             <img src="{{ asset('storage/' . $item->image_url) }}" alt="{{ $item->name }}">
                         @else
-                            商品画像
+                            <div class="placeholder">商品画像なし</div>
                         @endif
                     </div>
                     <p class="item-name">{{ $item->name }}</p>
                 </a>
             @empty
-                <p>購入した商品はありません。</p>
+                <p class="empty-message">購入した商品はありません。</p>
             @endforelse
         </div>
     </div>
@@ -85,7 +89,10 @@
             document.querySelectorAll('.tab-content').forEach(content => {
                 content.classList.remove('active');
             });
-            document.getElementById(targetId).classList.add('active');
+            const targetContent = document.getElementById(targetId);
+            if (targetContent) {
+                targetContent.classList.add('active');
+            }
         });
     });
 </script>
