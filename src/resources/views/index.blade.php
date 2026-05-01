@@ -15,30 +15,36 @@
     <div class="main-content">
         <div class="product-grid">
             
-            {{-- 
-                Controller から渡された $items をループさせます。
-            --}}
             @foreach ($items as $item)
                 <div class="product-card">
                     <!-- 商品画像 -->
-                    <a href="{{ route('item.show', ['id' => $item->id]) }}" class="product-card-link" style="text-decoration: none; color: inherit; display: block;">
+                    <a href="{{ route('item.show', ['item_id' => $item->id]) }}" class="product-card-link" style="text-decoration: none; color: inherit; display: block;">
+                        
                         <div class="product-image-box">
-                            @if($item->image_url)
-                                <img src="{{ asset('img/' . $item->image_url) }}" alt="{{ $item->name }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;">
+                            @if($item->is_sold)
+                                <div class="sold-label"></div>
+                            @endif
+
+                            @if(str_starts_with($item->image_url, 'items/'))
+                                <img src="{{ asset('storage/' . $item->image_url) }}" alt="{{ $item->item_name }}">
                             @else
-                                <div class="no-image-placeholder">
-                                    <p>No Image</p>
-                                </div>
+                                <img src="{{ asset('img/' . $item->image_url) }}" alt="{{ $item->item_name }}">
                             @endif
                         </div>
                         <!-- 商品名と価格 -->
                         <div class="product-info">
-                            <p class="product-name-label">{{ $item->name }}</p>
+                            <p class="product-name-label">{{ $item->item_name }}</p>
                             <p style="font-weight: bold; margin-top: 4px;">¥{{ number_format($item->price) }}</p>
                         </div>
                     </a>
                 </div>
             @endforeach
+
+            @if($items->isEmpty() && request('tab') == 'mylist')
+                <p style="grid-column: 1/-1; text-align: center; color: #666; margin-top: 50px;">
+                    いいねした商品はまだありません
+                </p>
+            @endif
 
         </div>
     </div>

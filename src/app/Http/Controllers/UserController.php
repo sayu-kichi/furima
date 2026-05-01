@@ -11,6 +11,8 @@ class UserController extends Controller
      */
     public function mypage()
     {
-        return view('mypage'); // あとで resources/views/mypage.blade.php を作る必要があります
+        return view('mypage'); 
     }
+
+    
 }

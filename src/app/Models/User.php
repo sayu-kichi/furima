@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\Profile;
+use App\Models\Like;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -52,4 +53,10 @@ class User extends Authenticatable implements MustVerifyEmail
             // Addressモデルと1対1の関係であることを定義
             return $this->hasOne(\App\Models\Address::class);
         }
+    public function likes()
+    {
+        return $this->hasMany(Like::class);
+    }
+
+    
 }

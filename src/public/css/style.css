@@ -150,13 +150,14 @@ body {
 }
 
 .product-image-box {
+    position: relative;
+    /* これが重要！中の SOLD の基準点になります */
     width: 100%;
     aspect-ratio: 1 / 1;
-    /* 正方形を維持 */
-    background-color: #f0f0f0;
-    border-radius: 4px;
+    /* 正方形にする場合（任意） */
     overflow: hidden;
-    margin-bottom: 10px;
+    /* はみ出た SOLD の端っこを隠す */
+    border-radius: 4px;
 }
 
 .product-image-box img {
@@ -179,6 +180,31 @@ body {
     font-size: 1rem;
     font-weight: bold;
     margin: 0;
+}
+
+.sold-label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 60px 60px 0 0;
+    border-color: #ff4d4d transparent transparent transparent;
+    z-index: 10;
+}
+
+.sold-label::after {
+    content: "SOLD";
+    position: absolute;
+    top: -50px;
+    left: 1px;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    transform: rotate(-45deg);
+    display: block;
+    width: 50px;
 }
 
 /* --- レスポンシブ対応 --- */

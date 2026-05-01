@@ -12,32 +12,24 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('orders', function (Blueprint $table) {
-            // id: unsignedBigInteger, Primary Key, Auto Increment
             $table->id();
 
-            // user_id: unsignedBigInteger, Foreign Key to users.id
             $table->foreignId('user_id')
                   ->constrained()
                   ->onDelete('cascade');
 
-            // item_id: unsignedBigInteger, Foreign Key to items.id
             $table->foreignId('item_id')
                   ->constrained()
                   ->onDelete('cascade');
 
-            // price: Integer
             $table->integer('price');
 
-            // payment_method: string
             $table->string('payment_method');
 
-            // delivery_address: VARCHAR(256)
             $table->string('delivery_address', 256);
 
-            // status: Integer
-            $blueprint->integer('status')->default(1); 
+            $table->integer('status')->default(1); 
 
-            // Created_at & Updated_at
             $table->timestamps();
         });
     }

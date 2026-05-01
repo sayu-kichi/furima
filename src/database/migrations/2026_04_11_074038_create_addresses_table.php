@@ -12,25 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('addresses', function (Blueprint $table) {
-            // id: unsignedBigInteger (Laravelのid()はデフォルトでこの型です)
             $table->id();
             
-            // user_id: unsignedBigInteger
-            $table->unsignedBigInteger('user_id');
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             
-            // postcode: char
-            $table->char('post_code', 8); // ハイフン込みを想定して8桁
-            
-            // address: VARCHAR(512)
+            $table->char('post_code', 8);
+
             $table->string('address', 512);
             
-            // building: VARCHAR(512)
             $table->string('building', 512)->nullable();
             
             $table->timestamps();
-
-            // 必要に応じて外部キー制約を追加（任意）
-            // $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

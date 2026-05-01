@@ -66,7 +66,8 @@
 /* アクションボタン（いいね・コメント） */
 .detail-actions {
     display: flex;
-    gap: 40px;
+    gap: 20px;
+    /* アイコン同士の間隔 */
     margin-bottom: 30px;
     padding: 0 10px;
 }
@@ -75,6 +76,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 50px;
     background: none;
     border: none;
     cursor: pointer;
@@ -93,18 +95,93 @@
     margin-bottom: 5px;
 }
 
+.action-item-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
 /* アイコンの状態変化（いいねが押されたとき） */
-.star-icon {
+.heart-icon {
     stroke: #333;
     fill: none;
     transition: all 0.2s ease;
+    cursor: pointer;
 }
 
-.star-icon.active {
+.heart-icon.is-liked {
     stroke: #ff4d4d;
     fill: #ff4d4d;
-    /* 塗りつぶし */
 }
+
+.action-count {
+    font-size: 14px;
+    color: #333;
+    margin-top: 4px;
+}
+
+.comment-item {
+    margin-bottom: 25px;
+}
+
+.comment-icon {
+    width: 32px;
+    height: 32px;
+    stroke: #333;
+    fill: none;
+}
+
+.comment-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+/* アイコンを丸くする */
+.comment-user-icon,
+.default-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #e0e0e0;
+    /* デフォルトのグレー */
+    overflow: hidden;
+}
+
+.comment-user-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.comment-user-name {
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+/* ★コメント本文をグレーの背景にする */
+.comment-text-container {
+    background-color: #f0f0f0;
+    /* 薄いグレー */
+    padding: 12px 16px;
+    border-radius: 8px;
+    line-height: 1.6;
+    color: #333;
+    display: inline-block;
+    /* 文字数に合わせる場合はこちら */
+    min-width: 200px;
+    max-width: 100%;
+}
+
+#like-count,
+.action-item-wrapper span {
+    font-size: 14px;
+    color: #333;
+}
+
+
 
 /* 購入ボタン */
 .purchase-button {
@@ -215,4 +292,5 @@
         /* スマホでは追従させない */
         width: 100%;
     }
+    
 }

@@ -14,68 +14,65 @@ use App\Http\Controllers\ProfileController;
 |--------------------------------------------------------------------------
 */
 
+// --- 1. 誰でもアクセス可能なルート ---
 Route::get('/', [ItemsController::class, 'index'])->name('index');
-Route::get('/item/{id}', [ItemsController::class, 'show'])->name('item.show');
-Route::get('/register', [AuthController::class, 'create'])->name('register');
-Route::post('/register', [AuthController::class, 'store']);
+Route::get('/item/{item_id}', [ItemsController::class, 'show'])->name('item.show');
 
-// ログイン済みユーザーのみアクセス可能なルート（プロフィール関連）
-Route::middleware(['auth', 'verified'])->group(function () {
-    // プロフィール表示（マイページ）
-    Route::get('/mypage', [ProfileController::class, 'index'])->name('profile.index');
+// --- 2. 未ログインユーザーのみ ---
+Route::middleware('guest')->group(function () {
+    Route::get('/register', [AuthController::class, 'create'])->name('register');
+    Route::post('/register', [AuthController::class, 'store']);
+    
+});
 
-    // プロフィール設定・編集画面の表示
+// --- 3. ログイン済みユーザー（メール認証未完了でもOK） ---
+Route::middleware('auth')->group(function () {
+    
+    /* メール認証関連 */
+    Route::get('/email/verify', function () {
+        return view('auth.verify-email');
+    })->middleware('auth')->name('verification.notice');
+
+
+    // メールのリンクをクリックした時の処理
+    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+        $request->fulfill();
+        return redirect('/mypage/profile');
+    })->middleware(['auth', 'signed'])->name('verification.verify');
+
+    Route::post('/email/verification-notification', function (Request $request) {
+        $request->user()->sendEmailVerificationNotification();
+        return back()->with('message', '認証リンクを再送信しました。');
+    })->middleware('throttle:6,1')->name('verification.send');
+
+
+    /* いいね機能 */
+    Route::post('/item/{item_id}/like', [ItemsController::class, 'toggleLike'])->name('item.like');
+    Route::post('/item/{item_id}/comment', [ItemsController::class, 'storeComment'])->name('item.comment')->middleware('auth');
+
+
+
+    /* プロフィール編集（ここを verified の外に出すと、認証直後にスムーズに表示できます） */
     Route::get('/mypage/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-
-    // プロフィール更新処理
     Route::put('/mypage/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
-/* --- メール認証関連 --- */
-
-// メール認証が必要な旨を表示する画面
-Route::get('/email/verify', function () {
-    return view('auth.verify-email');
-})->middleware('auth')->name('verification.notice');
-
-// メールのリンクをクリックした時の処理
-Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-    $request->fulfill();
-    return redirect('/mypage/profile');
-})->middleware(['auth', 'signed'])->name('verification.verify');
-
-// 認証メールの再送処理
-Route::post('/email/verification-notification', function (Request $request) {
-    $request->user()->sendEmailVerificationNotification();
-    return back()->with('message', '認証リンクを再送信しました。');
-})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
-
-
-/* --- 購入関連 --- */
-Route::middleware('auth')->group(function () {
+// --- 4. ログイン済み ＋ メール認証済み限定 ---
+Route::middleware(['auth', 'verified'])->group(function () {
     
-    // 購入画面表示
-    Route::get('/purchase/{item_id}', [PurchaseController::class, 'show'])
-        ->name('user.purchase.show');
+    // マイページ（表示のみ）
+    Route::get('/mypage', [ProfileController::class, 'index'])->name('profile.index');
 
-    // 購入処理
-    Route::post('/purchase/{item_id}', [PurchaseController::class, 'store'])
-        ->name('user.purchase.store');
-
+    /* 購入関連 */
+    Route::get('/purchase/{item_id}', [PurchaseController::class, 'show'])->name('user.purchase.show'); 
+    Route::post('/purchase/{item_id}', [PurchaseController::class, 'store'])->name('user.purchase.store');
     Route::get('/purchase/success/{item_id}', [PurchaseController::class, 'success'])->name('user.purchase.success');
-
-
-    // 住所変更画面の表示
-    Route::get('/purchase/address/{item_id}', [PurchaseController::class, 'edit'])
-        ->name('user.address.edit');
-
-    // 住所変更の更新処理（PUTに統一）
-    // 名前を「updateAddress」に合わせ、名前付きルートも1つに絞ります
-    Route::put('/purchase/address/{item_id}', [PurchaseController::class, 'updateAddress'])
-        ->name('user.address.update');
-    });
     
+    // 購入フローの中での住所変更（item_idが必要なもの）
+    Route::get('/purchase/address/{item_id}', [PurchaseController::class, 'editAddress'])->name('user.address.edit');
+    Route::put('/purchase/address/{item_id}', [PurchaseController::class, 'updateAddress'])->name('user.address.update');
 
-Route::get('/sell', [ItemsController::class, 'create'])->name('item.create');
-
-Route::post('/sell', [ItemsController::class, 'store'])->name('item.store');
+    /* 出品関連 */
+    Route::get('/sell', [ItemsController::class, 'create'])->name('item.create');
+    Route::post('/sell', [ItemsController::class, 'store'])->name('item.store');
+});

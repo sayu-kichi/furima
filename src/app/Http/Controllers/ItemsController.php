@@ -4,15 +4,28 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Item;
+use App\Models\Like;
+use App\Models\Comment;
 use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
 
 class ItemsController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $items = Item::all();
-        return view('index', ['items' => $items]);
+
+    $query = Item::query();
+
+    if ($request->query('tab') === 'mylist' && auth()->check()) {
+        $user = auth()->user();
+        $likedItemIds = $user->likes()->pluck('item_id');
+        $query->whereIn('id', $likedItemIds);
+    }
+
+    $items = $query->get();
+        return view('index', compact('items'));
+    
+
     }
 
     /**
@@ -21,50 +34,90 @@ class ItemsController extends Controller
      */
     public function create()
     {
-        // 全てのカテゴリを取得してビューに渡す
         $categories = Category::all();
-        
-        // resources/views/sell.blade.php を表示（ファイル名は適宜合わせてください）
-        return view('sell', compact('categories'));
+        $conditions = ['良好', '目立った傷や汚れなし', 'やや傷や汚れあり']; 
+        return view('sell', compact('categories', 'conditions'));
     }
 
     public function show($id)
     {
-        // IDに一致する商品を1件取得。なければ404エラー
-        $item = Item::findOrFail($id);
+        $item = Item::with(['comments.user', 'categories'])
+            ->withCount(['likes', 'comments'])
+            ->findOrFail($id);
         
-        // 商品詳細ビューを表示
         return view('item_detail', compact('item'));
+        
     }
 
-    /**
-     * 出品内容を保存するメソッド
-     * POST /sell
-     */
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required',
-            'price' => 'required|numeric',
-            'category_id' => 'required',
-            'image' => 'required|image',
+        'item_name'   => 'required|string|max:255',
+        'brand'       => 'nullable|string|max:255',
+        'description' => 'required|string|max:516',
+        'price'       => 'required|integer|min:0',
+        'condition'   => 'required|string',
+        'image'       => 'required|image|mimes:jpeg,png,jpg|max:2048',
+    ]);
+
+    // 画像の保存
+    $path = $request->file('image')->store('items', 'public');
+
+    // データの作成
+    $item = Item::create([
+        'user_id'     => Auth::id(),
+        'item_name'   => $request->item_name,
+        'image_url'   => $path,
+        'brand'       => $request->brand,
+        'description' => $request->description,
+        'price'       => $request->price,
+        'condition'   => $request->condition,
+    ]);
+
+        if ($request->has('categories')) {
+               $item->categories()->attach($request->categories);
+}
+        return redirect()->route('index')->with('message', '商品を出品しました');
+    }
+
+        public function storeComment(Request $request, $id)
+    {
+        $request->validate([
+            'comment' => 'required|max:255',
         ]);
 
-        // 画像の保存処理
-        $imagePath = $request->file('image')->store('public/items');
-        $dbPath = str_replace('public/', 'storage/', $path);
+         Comment::create([
+             'user_id' => auth()->id(),
+             'item_id' => $id,
+             'comment' => $request->comment,
+         ]);
 
+        return back()->with('message', 'コメントを投稿しました');
+    }
 
-        Item::create([
-            'user_id' => Auth::id(),
-            'name' => $request->name,
-            'description' => $request->description,
-            'price' => $request->price,
-            'category_id' => $request->category_id,
-            'image_url' => basename($imagePath),
-            'status' => 'selling', // 出品中
-        ]);
+    public function toggleLike($item_id)
+    {
+        if (!auth()->check()) {
+        return redirect()->route('login');
+        }
+        
+        $user = auth()->user();
 
-        return redirect('/')->with('success', '出品が完了しました');
+        $user_id = $user->id;
+        
+        $like = \App\Models\Like::where('user_id', $user->id)
+                            ->where('item_id', $item_id)
+                            ->first();
+
+        if ($like) {
+            $like->delete();
+        } else {
+            Like::create([
+                'user_id' => $user_id,
+                'item_id' => $item_id,
+            ]);
+        }
+
+        return back();
     }
 }

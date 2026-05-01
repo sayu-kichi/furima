@@ -10,10 +10,14 @@
 <div class="address-edit-container">
     <h1 class="address-edit-title">住所の変更</h1>
 
-    
-    <form action="{{ route('user.address.update', ['address' => $address->id ?? 0, 'item_id' => $item_id]) }}" method="POST">
+    {{-- 送信先ルートの判定：item_id がある場合のみ route を生成する --}}
+    @php
+        $updateRoute = isset($item_id) 
+            ? route('user.address.update', ['item_id' => $item_id]) 
+            : '#'; 
+    @endphp
 
-        
+    <form action="{{ $updateRoute }}" method="POST">
         @csrf
         @method('PUT')
 
@@ -25,7 +29,7 @@
                 id="post_code" 
                 name="post_code" 
                 class="form-input" 
-                value="{{ old('post_code', $profile->post_code) }}"
+                value="{{ old('post_code', $profile->post_code ?? '') }}"
                 placeholder="123-4567"
             >
             @error('post_code')
@@ -41,7 +45,7 @@
                 id="address" 
                 name="address" 
                 class="form-input" 
-                value="{{ old('address', $profile->address) }}"
+                value="{{ old('address', $profile->address ?? '') }}"
                 placeholder="〇〇県〇〇市..."
             >
             @error('address')
@@ -57,7 +61,7 @@
                 id="building" 
                 name="building" 
                 class="form-input" 
-                value="{{ old('building', $profile->building) }}"
+                value="{{ old('building', $profile->building ?? '') }}"
                 placeholder="マンション名・部屋番号など"
             >
             @error('building')

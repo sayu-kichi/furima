@@ -11,11 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
-            $table->id();
-            $table->string('name'); // カテゴリ名
-            $table->timestamps();
+        Schema::create('categories', function (Blueprint $blueprint) {
+            $blueprint->id();
+            $blueprint->string('name', 256);
+            $blueprint->timestamps();
         });
+
     }
 
     /**

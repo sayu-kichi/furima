@@ -6,18 +6,36 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
     {
         Schema::create('items', function (Blueprint $table) {
             $table->id();
-            $table->string('name');          // 商品名
-            $table->string('image_url');     // 画像のパス
-            $table->string('price');
+
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+
+            $table->string('item_name', 256);
+
+            $table->string('image_url', 256);
+
+            $table->string('brand', 256)->nullable();
+            
+            $table->string('description', 516);
+
+            $table->integer('price');
+
+            $table->string('condition', 256);
+
             $table->timestamps();
         });
     }
 
-    public function down()
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
     {
         Schema::dropIfExists('items');
     }

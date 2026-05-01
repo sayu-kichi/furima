@@ -12,19 +12,26 @@ use App\Models\Item;
 class ProfileController extends Controller
 {
     /**
-     * プロフィール画面の表示
+     * プロフィール画面（マイページ）の表示
      */
-    public function index()
+    public function index(Request $request) // Requestを追加
     {
         $user = Auth::user();
+        
+        // 1. 現在のタブを取得（デフォルトは 'sell'：出品した商品）
+        $tab = $request->query('tab', 'sell');
 
-        // 出品した商品を取得
-        $sellingItems = $user->items ?? [];
+        // 2. タブに応じて表示するデータを切り替え
+        if ($tab === 'buy') {
+            // 購入済み商品：itemsテーブルのbuyer_idが自分のIDのもの
+            $items = Item::where('buyer_id', $user->id)->get();
+        } else {
+            // 出品した商品：itemsテーブルのuser_idが自分のIDのもの
+            $items = Item::where('user_id', $user->id)->get();
+        }
 
-        // 購入した商品を取得
-        $boughtItems = $user->boughtItems ?? [];
-
-        return view('user.profile', compact('user', 'sellingItems', 'boughtItems'));
+        // 3. ビューに $tab と $items を渡す
+        return view('user.profile', compact('user', 'items', 'tab'));
     }
 
     /**
@@ -32,17 +39,12 @@ class ProfileController extends Controller
      */
     public function edit()
     {
-         $profile = auth()->user()->profile;
-            if (!$profile) {
-                    // プロフィールがない場合のデフォルト値を設定するか、新規作成画面へ飛ばすなどの処理
-                }
+        $user = Auth::user();
+        $profile = $user->profile ?? new Profile();
 
-            // 2. viewに $profile を渡す
-            // compact('profile') を追加することで、Blade側で $profile が使えるようになります
-            // また、画面表示に必要な $item_id なども一緒に渡します
-            return view('user.address_edit', compact('profile', 'item_id'));
-
+        return view('user.edit_profile', compact('user', 'profile'));
     }
+
 
     /**
      * プロフィールの更新処理
@@ -51,7 +53,6 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
 
-        // バリデーション
         $request->validate([
             'name'      => 'required|string|max:255',
             'post_code' => 'required|string|max:8',
@@ -60,37 +61,29 @@ class ProfileController extends Controller
             'image'     => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        // 1. ユーザー名の更新 (usersテーブル)
         $user->update(['name' => $request->name]);
 
-        // 2. プロフィールデータの準備
         $profileData = [
             'post_code' => $request->post_code,
             'address'   => $request->address,
             'building'  => $request->building,
         ];
 
-        // 3. 画像処理
         if ($request->hasFile('image')) {
-            // 既存のプロフィール情報を取得
             $currentProfile = $user->profile;
-
-            // 古い画像ファイルがあればストレージから削除
             if ($currentProfile && $currentProfile->image_url) {
                 Storage::disk('public')->delete($currentProfile->image_url);
             }
-
-            // 新しい画像を保存し、パスを配列に追加
             $path = $request->file('image')->store('profiles', 'public');
             $profileData['image_url'] = $path;
         }
 
-        // 4. プロフィール情報の保存（存在しなければ作成、あれば更新）
         $user->profile()->updateOrCreate(
             ['user_id' => $user->id],
             $profileData
         );
 
-        return redirect()->route('index')->with('message', 'プロフィールを更新しました');
+        // 更新後はマイページ（index）にリダイレクト
+        return redirect()->route('mypage')->with('message', 'プロフィールを更新しました');
     }
 }

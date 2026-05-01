@@ -4,22 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Category extends Model
 {
     use HasFactory;
 
-    // テーブル名が categories であることを明示
     protected $table = 'categories';
 
-    // 複数代入を許可するカラム
-    protected $fillable = ['name'];
+    protected $fillable = ['content'];
 
-    /**
-     * 商品とのリレーション（1対多）
-     */
-    public function items()
+    public function items(): BelongsToMany
     {
-        return $this->hasMany(Item::class);
+        return $this->belongsToMany(Item::class, 'category_item');
     }
 }
