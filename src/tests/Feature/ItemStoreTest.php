@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions; // エラー回避のため変更を推奨
 use Tests\TestCase;
 use App\Models\User;
 use App\Models\Category;
@@ -11,13 +11,17 @@ use Illuminate\Support\Facades\Storage;
 
 class ItemStoreTest extends TestCase
 {
-    use RefreshDatabase;
+    // 先ほど解決したDBエラーを再発させないため Transactions を使用
+    use DatabaseTransactions;
 
     public function test_user_can_create_item()
     {
         $user = User::factory()->create();
-        $category = Category::create(['content' => 'ファッション']);
+        $category = Category::create(['name' => 'ファッション']);
         Storage::fake('public'); 
+
+        // 再利用するためにファイルを変数に代入します
+        $dummyImage = UploadedFile::fake()->create('test.jpg', 100); 
 
         $response = $this->actingAs($user)->post('/sell', [
             'item_name' => 'テスト商品',
@@ -25,7 +29,7 @@ class ItemStoreTest extends TestCase
             'description' => '商品の説明文です。',
             'price' => 1000,
             'condition' => '良好',
-            'image' => UploadedFile::fake()->image('test.jpg'),
+            'image' => $dummyImage, // 変数を使用
             'categories' => [$category->id],
         ]);
 
@@ -37,6 +41,7 @@ class ItemStoreTest extends TestCase
             'condition' => '良好',
         ]);
 
-        Storage::disk('public')->assertExists('items/' . UploadedFile::fake()->image('test.jpg')->hashName());
+        // 保存されたファイル名のハッシュ値を正しく比較
+        Storage::disk('public')->assertExists('items/' . $dummyImage->hashName());
     }
 }

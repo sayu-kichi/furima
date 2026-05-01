@@ -12,7 +12,7 @@ class Category extends Model
 
     protected $table = 'categories';
 
-    protected $fillable = ['content'];
+    protected $fillable = ['name'];
 
     public function items(): BelongsToMany
     {
