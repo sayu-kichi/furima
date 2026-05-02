@@ -3,7 +3,7 @@
 ## 環境構築
 
 ### Dockerビルド
-* `git clone <リポジトリのURL>`
+* `git clone <https://github.com/sayu-kichi/furima.git>`
 * `docker-compose up -d --build`
 
 ### Laravel環境構築
@@ -32,10 +32,8 @@
 * Stripe (決済機能)
 
 ## ER図
-<!-- 画像をアップロードしたらここにパスを記述 -->
-![ER図](storage/app/public/er_diagram.png)
+src/storage/app/public/フリマアプリ.drawio (1).png
 
 ## 作成者
-* 黛 紗由吉 (Mayuzumi Sayukichi)
-* COACHTECH受講生 (2026年6月卒業予定)
+* masunaga sayuki
 EOF
