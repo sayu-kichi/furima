@@ -1,0 +1,40 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class Comment extends Model
+{
+    use HasFactory;
+
+    /**
+     * 一括代入可能な属性
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'item_id',
+        'user_id',
+        'comment',
+    ];
+
+    /**
+     * このコメントを投稿したユーザーを取得 (多対1)
+     * 今回のエラー「RelationNotFoundException」を解消するためのメインメソッドです。
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * このコメントが投稿された商品を取得 (多対1)
+     */
+    public function item(): BelongsTo
+    {
+        return $this->belongsTo(Item::class);
+    }
+}

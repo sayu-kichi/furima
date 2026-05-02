@@ -10,6 +10,7 @@ services:
       - ./src:/var/www/
     depends_on:
       - php
+      - mysql
 
   php:
     build: ./docker/php
@@ -23,8 +24,7 @@ services:
       MYSQL_DATABASE: laravel_db
       MYSQL_USER: laravel_user
       MYSQL_PASSWORD: laravel_pass
-    command:
-      mysqld --default-authentication-plugin=mysql_native_password
+    command: mysqld --default-authentication-plugin=mysql_native_password
     volumes:
       - ./docker/mysql/data:/var/lib/mysql
       - ./docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
@@ -40,3 +40,10 @@ services:
       - mysql
     ports:
       - 8080:80
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog
+    ports:
+      - "1025:1025" # SMTPサーバー（Laravelからメールを送る用）
+      - "8025:8025" 

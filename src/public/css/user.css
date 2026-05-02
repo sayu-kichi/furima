@@ -1,0 +1,137 @@
+/* --- 会員登録画面 レイアウト --- */
+.auth-page {
+    background-color: #fff;
+    min-height: 100vh;
+}
+
+/* ヘッダー (会員登録・ログイン画面用) */
+.auth-header {
+    background-color: #000;
+    padding: 15px 0;
+    width: 100%;
+}
+
+.auth-header .header-container {
+    max-width: 1512px;
+    margin: 0 auto;
+    padding: 0 66px;
+}
+
+.auth-header img {
+    height: 40px;
+    width: auto;
+}
+
+/* メインコンテンツエリア */
+.auth-main {
+    display: flex;
+    justify-content: center;
+    padding: 30px 20px;
+}
+
+.auth-content {
+    width: 100%;
+    max-width: 580px;
+}
+
+.auth-title {
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #000;
+}
+
+/* フォームのスタイリング */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #000;
+}
+
+/* 指示通りの「下線のみ」の入力欄 */
+.form-group input {
+    width: 100%;
+    padding: 8px 12px; /* 枠の内側に余白を持たせる */
+    border: 1px solid #ccc; /* 四角いボーダー */
+    border-radius: 4px; /* わずかに角を丸くして柔らかい印象に */
+    font-size: 16px;
+    outline: none;
+    background: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box; /* パディングを含めたサイズ計算 */
+}
+
+.form-group input:focus {
+    border-bottom: 1px solid #ff4d4d;
+}
+
+/* 登録ボタン (共通の赤いボタンデザイン) */
+.auth-submit-btn {
+    width: 100%;
+    background-color: #ff4d4d;
+    color: #fff;
+    border: none;
+    padding: 12px;
+    border-radius: 4px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    margin-top: 20px;
+}
+
+.auth-submit-btn:hover {
+    opacity: 0.8;
+}
+
+/* ログインへのリンク */
+.auth-footer-link {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.auth-footer-link a {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 15px;
+}
+
+.auth-footer-link a:hover {
+    text-decoration: underline;
+}
+
+/* バリデーションエラーメッセージ */
+.error-message {
+    color: #ff4d4d;
+    font-size: 14px;
+    margin-top: 8px;
+    font-weight: bold;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .auth-header .header-container {
+        padding: 0 20px;
+    }
+
+    .auth-content {
+        max-width: 100%;
+    }
+
+    .auth-title {
+        font-size: 24px;
+        margin-bottom: 30px;
+    }
+}
