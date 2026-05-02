@@ -13,25 +13,31 @@ class ItemsController extends Controller
 {
     public function index(Request $request)
     {
+        $query = Item::query();
 
-    $query = Item::query();
+        if ($request->filled('keyword')) {
+            $query->where('item_name', 'like', '%' . $request->keyword . '%');
+        }
 
-    if ($request->query('tab') === 'mylist' && auth()->check()) {
-        $user = auth()->user();
-        $likedItemIds = $user->likes()->pluck('item_id');
-        $query->whereIn('id', $likedItemIds);
-    }
+        if (auth()->check()) {
+            $query->where('user_id', '!=', auth()->id());
+        }
 
-    $items = $query->get();
+        if ($request->query('tab') === 'mylist') {
+            if (auth()->check()) {
+                $user = auth()->user();
+                $likedItemIds = $user->likes()->pluck('item_id');
+                $query->whereIn('id', $likedItemIds);
+            } else {
+                $items = collect(); 
+                return view('index', compact('items'));
+            }
+        }
+
+        $items = $query->get();
         return view('index', compact('items'));
-    
-
     }
 
-    /**
-     * 出品ページを表示するメソッド
-     * GET /sell
-     */
     public function create()
     {
         $categories = Category::all();
@@ -60,10 +66,8 @@ class ItemsController extends Controller
         'image'       => 'required|image|mimes:jpeg,png,jpg|max:2048',
     ]);
 
-    // 画像の保存
     $path = $request->file('image')->store('items', 'public');
 
-    // データの作成
     $item = Item::create([
         'user_id'     => Auth::id(),
         'item_name'   => $request->item_name,
@@ -84,7 +88,10 @@ class ItemsController extends Controller
     {
         $request->validate([
             'comment' => 'required|max:255',
-        ]);
+            ], [
+                'comment.required' => 'コメントを入力してください',
+                'comment.max' => 'コメントは255文字以内で入力してください',
+            ]);
 
          Comment::create([
              'user_id' => auth()->id(),

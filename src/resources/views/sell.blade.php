@@ -99,11 +99,11 @@
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     preview.src = e.target.result;
-                    container.classList.remove('hidden'); // 画像がある時だけ表示
+                    container.classList.remove('hidden');
                 }
                 reader.readAsDataURL(input.files[0]);
             } else {
-                container.classList.add('hidden'); // キャンセルされたら隠す
+                container.classList.add('hidden');
             }
         }
     </script>

@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'COACHTECH')</title>
-    <!-- 全画面共通のスタイルシート -->
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
   
 
@@ -13,23 +12,15 @@
     @yield('css')
 </head>
 <body>
-    {{-- 
-        ヘッダーセクション 
-        ここが一番上に記述されているため、画面の最上部に表示されます。
-    --}}
+  
     <header class="header-bg">
         <div class="header-container">
-            <!-- ロゴ：常に表示 -->
             <div class="logo">
                 <a href="/">
                     <img src="{{ asset('img/titlle.png') }}" alt="COACHTECH" class="logo-img">
                 </a>
             </div>
             
-            {{-- 
-                認証系画面（is-auth-pageが定義されている時）以外で
-                検索バーとナビを表示する
-            --}}
             @if(!View::hasSection('is-auth-page'))
                 <!-- 検索バー -->
                 <div class="search-container">
@@ -47,7 +38,6 @@
                             <button type="submit" class="nav-link-btn">ログアウト</button>
                         </form>
                         <a href="{{ route('profile.index') }}" class="nav-link">マイページ</a>
-<!--   直書きVER                     <a href="/mypage" class="nav-link">マイページ</a> -->
                     @else
                         <!-- 未ログイン時の表示 -->
                         <a href="{{ route('login') }}" class="nav-link">ログイン</a>
@@ -59,15 +49,10 @@
         </div>
     </header>
 
-    {{-- 
-        メインコンテンツエリア
-        ヘッダーの下に各画面の中身（@section('content')）が流し込まれます。
-    --}}
     <main class="main-content-wrapper">
         @yield('content')
     </main>
 
-    {{-- 個別のJavaScriptが必要な場合 --}}
     @yield('script')
 </body>
 </html>

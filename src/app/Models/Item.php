@@ -69,4 +69,14 @@ class Item extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function getIsSoldAttribute()
+    {
+        return $this->order()->exists();
+    }
+
+    public function order()
+    {
+        return $this->hasOne(Order::class);
+    }
 }

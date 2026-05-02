@@ -18,19 +18,14 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
         
-        // 1. 現在のタブを取得（デフォルトは 'sell'：出品した商品）
         $tab = $request->query('tab', 'sell');
 
-        // 2. タブに応じて表示するデータを切り替え
         if ($tab === 'buy') {
-            // 購入済み商品：itemsテーブルのbuyer_idが自分のIDのもの
             $items = Item::where('buyer_id', $user->id)->get();
         } else {
-            // 出品した商品：itemsテーブルのuser_idが自分のIDのもの
             $items = Item::where('user_id', $user->id)->get();
         }
 
-        // 3. ビューに $tab と $items を渡す
         return view('user.profile', compact('user', 'items', 'tab'));
     }
 
@@ -84,6 +79,6 @@ class ProfileController extends Controller
         );
 
         // 更新後はマイページ（index）にリダイレクト
-        return redirect()->route('mypage')->with('message', 'プロフィールを更新しました');
+        return redirect()->route('index')->with('message', 'プロフィールを更新しました');
     }
 }

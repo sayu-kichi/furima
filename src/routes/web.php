@@ -50,9 +50,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/item/{item_id}/like', [ItemsController::class, 'toggleLike'])->name('item.like');
     Route::post('/item/{item_id}/comment', [ItemsController::class, 'storeComment'])->name('item.comment')->middleware('auth');
 
-
-
-    /* プロフィール編集（ここを verified の外に出すと、認証直後にスムーズに表示できます） */
+    /* プロフィール編集 */
     Route::get('/mypage/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/mypage/profile', [ProfileController::class, 'update'])->name('profile.update');
 });

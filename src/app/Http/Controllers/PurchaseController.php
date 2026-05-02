@@ -13,9 +13,6 @@ use App\Http\Requests\AddressRequest;
 
 class PurchaseController extends Controller
 {
-    /**
-     * 商品購入画面の表示
-     */
     public function show($item_id)
     {
         $item = Item::findOrFail($item_id);
@@ -25,28 +22,19 @@ class PurchaseController extends Controller
         return view('user.purchase', compact('item', 'user', 'profile'));
     }
 
-    /**
-     * 決済処理（Stripe Checkout）
-     */
     public function store(Request $request, $item_id)
     {
-        // 1. データの取得と型の強制（オブジェクト混入を防ぐ）
         $item = Item::findOrFail($item_id);
         $paymentMethod = (string)$request->input('payment_method');
         
-        // Stripe APIキーの取得（文字列であることを保証）
         $stripeSecret = config('services.stripe.secret');
         if (empty($stripeSecret)) {
             return back()->withErrors(['error' => 'StripeのAPIキーが設定されていません。']);
         }
         Stripe::setApiKey((string)$stripeSecret);
 
-        // 2. 支払い方法の判定
-        // コンビニ払いの場合、Stripe側でいくつか制約（通貨や顧客メールアドレスなど）が必要になるため整理します
         $paymentTypes = ($paymentMethod === 'カード払い') ? ['card'] : ['konbini'];
 
-        // 3. セッションオプションの組み立て
-        // 徹底的に単純な型（string, int）のみを渡すようにします
         $sessionOptions = [
             'payment_method_types' => $paymentTypes,
             'line_items' => [[
@@ -129,11 +117,22 @@ class PurchaseController extends Controller
         public function success($item_id)
     {
         $item = Item::findOrFail($item_id);
+        $user = auth()->user(); 
+        $profile = $user->profile;
 
         $item->update([
             'is_sold' => true,
             'sold_at' => now(),
-            'buyer_id' => auth()->id(),
+            'buyer_id' => $user->id,
+        ]);
+
+        Order::create([
+            'user_id'          => $user->id,
+            'item_id'          => $item->id,
+            'price'            => $item->price,
+            'payment_method'   => 'カード払い',
+            'delivery_address' => $profile ? $profile->address : '未設定', 
+            'status'           => 1,
         ]);
 
         return redirect()->route('item.show', ['item_id' => $item->id]);
