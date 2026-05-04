@@ -49,12 +49,18 @@ class ProfileController extends Controller
         $user = Auth::user();
 
         $request->validate([
-            'name'      => 'required|string|max:255',
-            'post_code' => 'required|string|max:8',
-            'address'   => 'required|string|max:255',
-            'building'  => 'nullable|string|max:255',
-            'image'     => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
+        'name' => 'required|string|max:255',
+
+        'email' => 'required|string|email|max:255|unique:users',
+
+        'password' => 'required|string|min:8|confirmed',
+    ], [
+        'name.required' => 'お名前を入力してください。',
+        'email.required' => 'メールアドレスを入力してください。',
+        'password.required' => 'パスワードを入力してください。',
+        'password.min' => 'パスワードは8文字以上で入力してください。',
+        'password.confirmed' => 'パスワードと一致しません。',
+    ]);
 
         $user->update(['name' => $request->name]);
 

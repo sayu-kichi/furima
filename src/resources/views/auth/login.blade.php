@@ -16,7 +16,7 @@
         <div class="auth-content">
             <h1 class="auth-title">ログイン</h1>
 
-            <form action="{{ route('login') }}" method="POST" class="auth-form">
+            <form action="{{ route('login') }}" method="POST" class="auth-form" novalidate>
                 @csrf
 
                 <div class="form-group">

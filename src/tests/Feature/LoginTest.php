@@ -2,29 +2,30 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
 
 class LoginTest extends TestCase
 {
-    use DatabaseTransactions;
+    use RefreshDatabase;
 
+    /**
+     * メールアドレスが入力されていない場合
+     */
     public function test_email_is_required()
-{
-    $response = $this->post('/login', [
-        'email' => '',
-        'password' => 'password123',
-    ]);
+    {
+        $response = $this->post('/login', [
+            'email' => '',
+            'password' => 'password123',
+        ]);
 
-    // エラー内容を表示してテストを止める（デバッグ用）
-    // $response->dumpSession(); 
+        $response->assertSessionHasErrors(['email' => 'メールアドレスを入力してください。']);
+    }
 
-    // メッセージの文言を指定せず、エラーがあることだけをチェックする
-    $response->assertSessionHasErrors(['email']); 
-}
-
+    /**
+     * パスワードが入力されていない場合
+     */
     public function test_password_is_required()
     {
         $response = $this->post('/login', [
@@ -32,32 +33,37 @@ class LoginTest extends TestCase
             'password' => '',
         ]);
 
-        $response->assertSessionHasErrors(['password']);
+        $response->assertSessionHasErrors(['password' => 'パスワードを入力してください。']);
     }
 
-    public function test_login_failure_with_wrong_credentials()
+    /**
+     * 入力情報が間違っている場合
+     */
+    public function test_login_failed_with_invalid_credentials()
     {
         $response = $this->post('/login', [
             'email' => 'nonexistent@example.com',
-            'password' => 'wrong-password',
+            'password' => 'wrong_password',
         ]);
 
-        $response->assertSessionHasErrors(['email']);
+        $response->assertSessionHasErrors(['email' => 'ログイン情報が登録されていません']);
     }
 
-    public function test_user_can_login_with_correct_credentials()
+    /**
+     * 正しい情報が入力された場合
+     */
+    public function test_login_success()
     {
         $user = User::factory()->create([
-            'password' => Hash::make('password123'),
+            'password' => bcrypt($password = 'password123'),
         ]);
 
         $response = $this->post('/login', [
             'email' => $user->email,
-            'password' => 'password123',
+            'password' => $password,
         ]);
 
         $this->assertAuthenticatedAs($user);
-
         $response->assertRedirect('/');
     }
 }
